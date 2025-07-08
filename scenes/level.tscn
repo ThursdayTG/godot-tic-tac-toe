@@ -1,0 +1,33 @@
+[gd_scene load_steps=9 format=3 uid="uid://bcnw83ewoc6go"]
+
+[ext_resource type="Script" uid="uid://ce3g1fwvami8i" path="res://scripts/main.gd" id="1_mx8sn"]
+[ext_resource type="PackedScene" uid="uid://b3aop6c1upcfq" path="res://scenes/grid_3x3.tscn" id="1_w8frs"]
+[ext_resource type="PackedScene" uid="uid://c4uftvet1cy5o" path="res://scenes/nought.tscn" id="2_2r41h"]
+[ext_resource type="FontFile" uid="uid://c13gmex66nght" path="res://assets/PixelPurl.ttf" id="2_mx8sn"]
+[ext_resource type="PackedScene" uid="uid://bi8oakg0leejj" path="res://scenes/cross.tscn" id="3_klq6b"]
+[ext_resource type="Script" uid="uid://bsprb3tetlbtj" path="res://scripts/restart_button.gd" id="3_ppgk2"]
+[ext_resource type="Script" uid="uid://b7ij8eqxbrsev" path="res://scripts/grid.gd" id="5_klq6b"]
+
+[sub_resource type="Theme" id="Theme_tmr53"]
+default_font = ExtResource("2_mx8sn")
+default_font_size = 100
+
+[node name="main" type="Node"]
+script = ExtResource("1_mx8sn")
+nought_scene = ExtResource("2_2r41h")
+cross_scene = ExtResource("3_klq6b")
+
+[node name="grid_3x3" parent="." instance=ExtResource("1_w8frs")]
+position = Vector2(960, 540)
+script = ExtResource("5_klq6b")
+
+[node name="button" type="Button" parent="."]
+offset_left = 1529.0
+offset_top = 93.0
+offset_right = 1809.0
+offset_bottom = 221.0
+theme = SubResource("Theme_tmr53")
+text = "Reset"
+script = ExtResource("3_ppgk2")
+
+[connection signal="pressed" from="button" to="button" method="_on_button_pressed"]
