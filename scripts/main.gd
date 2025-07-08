@@ -24,16 +24,18 @@ var valid_coordinates_x: PackedInt32Array = f_coordinates_setter(GRID_MARGIN_X)
 var valid_coordinates_y: PackedInt32Array = f_coordinates_setter(GRID_MARGIN_Y)
 
 func f_coordinates_setter(grid_margin: int) -> PackedInt32Array:
-    var temp_array: PackedInt32Array = []
+    # temporary array
+    var tarr: PackedInt32Array = []
 
-    temp_array.push_back(grid_margin)                                         # start coordinate of first cell
-    temp_array.push_back(temp_array[temp_array.size() - 1] + CELL_LENGTH)     # end coordinate of first cell
-    temp_array.push_back(temp_array[temp_array.size() - 1] + BORDER_WIDTH)    # start coordinate of second cell
-    temp_array.push_back(temp_array[temp_array.size() - 1] + CELL_LENGTH)     # end coordinate of second cell
-    temp_array.push_back(temp_array[temp_array.size() - 1] + BORDER_WIDTH)    # start coordinate of third cell
-    temp_array.push_back(temp_array[temp_array.size() - 1] + CELL_LENGTH)     # end coordinate of third cell
+    tarr.push_back(grid_margin)                             # start coordinate of first cell
+    tarr.push_back(tarr[tarr.size() - 1] + CELL_LENGTH)     # end coordinate of first cell
+    tarr.push_back(tarr[tarr.size() - 1] + BORDER_WIDTH)    # start coordinate of second cell
+    tarr.push_back(tarr[tarr.size() - 1] + CELL_LENGTH)     # end coordinate of second cell
+    tarr.push_back(tarr[tarr.size() - 1] + BORDER_WIDTH)    # start coordinate of third cell
+    tarr.push_back(tarr[tarr.size() - 1] + CELL_LENGTH)     # end coordinate of third cell
 
-    return temp_array
+    return tarr
+
 
 
 
@@ -76,6 +78,8 @@ func f_input_to_grid_coordinates(coordinates_valid: PackedInt32Array, coordinate
     return -1
 
 
+
+
 # registers and processes left mouse button inputs
 func _input(event: InputEvent) -> void:
     # exits function if registered input is not a mouse button input
@@ -97,8 +101,13 @@ func _input(event: InputEvent) -> void:
         if (grid_pos_x != -1 && grid_pos_y != -1 && game_won == 0):
             # if cell has not been played before, play clicked
             if (grid_data[grid_pos_x][grid_pos_y] == 0):
-                grid_data[grid_pos_x][grid_pos_y] = f_turn_process()
-                grid.f_draw_board()
+
+                # if current turn has not been assigned to any player,
+                # assign turn to random player
+
+                # f_player_state_update()
+                grid_data[grid_pos_x][grid_pos_y] = f_player_state_update()
+                grid.f_draw_symbols()
 
                 # calls `f_win_con()` to update `game_won` variable if
                 # win condition has been met by any player
@@ -109,33 +118,23 @@ func _input(event: InputEvent) -> void:
 
 
 # variables used to determine which player is currently playing
-var turn_noughts: int = 1
-var turn_crosses: int = 0
+var player_state: int = 0
 
-func f_turn_process() -> int:
-    # return 0 would indicate no change in playstate, as `grid_data` is initialised with all values at 0
-    # return 1 will indicate that a cell has been played by noughts
-    # return 2 will indicate that a cell has been played by crosses
-    # return -1 should never occur, indicating an error
-
-    if   (turn_noughts == 1 && turn_crosses == 0):
-        turn_noughts = 0
-        turn_crosses = 1
+func f_player_state_update() -> int:
+    # return 0 indicates that the current turn has not yet been assigned to any player
+    # return 1 indicates that a cell has been played by noughts
+    # return 2 indicates that a cell has been played by crosses
+    # return -1 indicates an error
+    if   (player_state == 0):
+        player_state = randi_range(1, 2)
+        return 0
+    elif (player_state == 1):
+        player_state = 2
         return 1
-    elif (turn_noughts == 0 && turn_crosses == 1):
-        turn_noughts = 1
-        turn_crosses = 0
+    elif (player_state == 2):
+        player_state = 1
         return 2
     else:
-        print(
-            "Function `f_turn_process` ran into an error."
-            + "It could not be determined which player's turn it is."
-            + "Inspect `grid_data`, `turn_noughts`, and `turn_crosses`." + "\n"
-            + "\n"
-            + "grid_data: " + str(grid_data) + "\n"
-            + "turn_noughts: " + str(turn_noughts) + "\n"
-            + "turn_crosses: " + str(turn_crosses)
-        )
         return -1
 
 
@@ -177,9 +176,9 @@ func f_win_con() -> int:
 var game_won_by: String = "none"
 func f_determine_winner() -> String:
     if (f_win_con() == 1):
-        if (f_turn_process() == 1):
+        if (f_player_state_update() == 1):
             return "noughts"
-        elif (f_turn_process() == 2):
+        elif (f_player_state_update() == 2):
             return "crosses"
         else:
             return "error"
@@ -203,8 +202,7 @@ func f_debug_data_collector() -> void:
         + "var valid_coordinates_y: " + type_string(typeof(valid_coordinates_y)) + " = " + str(valid_coordinates_y) + "\n"
         + "var grid_pos_x: " + type_string(typeof(grid_pos_x)) + " = " + str(grid_pos_x) + "\n"
         + "var grid_pos_y: " + type_string(typeof(grid_pos_y)) + " = " + str(grid_pos_y) + "\n"
-        + "var turn_noughts: " + type_string(typeof(turn_noughts)) + " = " + str(turn_noughts) + "\n"
-        + "var turn_crosses: " + type_string(typeof(turn_crosses)) + " = " + str(turn_crosses) + "\n"
+        + "var player_state: " + type_string(typeof(player_state)) + " = " + str(player_state) + "\n"
         + "\n"
         + "### internal state of the game" + "\n"
         + "var grid_data: " + type_string(typeof(grid_data)) + " = " + str(grid_data) + "\n"

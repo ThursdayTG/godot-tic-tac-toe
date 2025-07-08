@@ -17,7 +17,7 @@ but I don't understand how it works on a more technical level
 
 
 # draws symbols on the playing field
-func f_draw_board() -> void:
+func f_draw_symbols() -> void:
     const CELL_CENTRE: float = float(Main.CELL_LENGTH) / 2.0
     var draw_coordinates_x: float = 0.0
     var draw_coordinates_y: float = 0.0
